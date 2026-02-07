@@ -33,6 +33,17 @@ def generate_launch_description():
         description='Use simulation time'
     )
 
+    map_arg = DeclareLaunchArgument(
+    'map',
+    default_value=os.path.join(
+        pkg_dir,
+        'map',
+        'maze.yaml'
+    ),
+    description='Full path to map YAML file'
+   )
+
+
     use_rviz_arg = DeclareLaunchArgument(
         'use_rviz',
         default_value='true',
@@ -55,23 +66,27 @@ def generate_launch_description():
 
     # Include AMCL localisation component
     amcl_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(pkg_dir, 'launch', 'navigation', 'include', 'amcl.launch.py')
-        ),
-        launch_arguments={
-            'use_sim_time': LaunchConfiguration('use_sim_time')
-        }.items()
+    PythonLaunchDescriptionSource(
+        os.path.join(pkg_dir, 'launch', 'navigation', 'include', 'amcl.launch.py')
+    ),
+    launch_arguments={
+        'use_sim_time': LaunchConfiguration('use_sim_time'),
+        'map': LaunchConfiguration('map')
+    }.items()
     )
+
 
     # Include Nav2 core navigation component
     nav2_core_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(pkg_dir, 'launch', 'navigation', 'include', 'nav2_core.launch.py')
-        ),
-        launch_arguments={
-            'use_sim_time': LaunchConfiguration('use_sim_time')
-        }.items()
+    PythonLaunchDescriptionSource(
+        os.path.join(pkg_dir, 'launch', 'navigation', 'include', 'nav2_core.launch.py')
+    ),
+    launch_arguments={
+        'use_sim_time': LaunchConfiguration('use_sim_time'),
+        'map': LaunchConfiguration('map')
+    }.items()
     )
+
 
     # RViz node with Nav2 configuration
     rviz_config_file = os.path.join(pkg_dir, 'config', 'nav2', 'nav2_view.rviz')
@@ -90,6 +105,7 @@ def generate_launch_description():
         # Launch arguments
         use_sim_time_arg,
         use_rviz_arg,
+	map_arg,
 
         # Simulation environment
         gazebo_launch,
